@@ -1,13 +1,14 @@
-import inspect
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import markdown as md
 
 directory = "Project1_data/"
 dataFileName = directory + "data.txt"
 sepLineAFileName = directory + "sep_line_a.txt"
 sepLineBFileName = directory + "sep_line_b.txt"
+reportFile = "report.md"
 
 
 def generate_random_data():
@@ -25,7 +26,7 @@ def generate_random_data():
     file.close()
 
 
-def render_height_graph(data_frame, sep_line):
+def build_height_plot(data_frame, sep_line):
     area = 50
 
     males = data_frame[data_frame[2] == 0]
@@ -48,10 +49,10 @@ def render_height_graph(data_frame, sep_line):
 
     plt.title("Height for Male vs Female")
     plt.xlabel("Height (ft)")
-    plt.show()
+    return plt
 
 
-def render_height_weight_graph(data_frame, sep_line):
+def build_height_weight_plot(data_frame, sep_line):
     area = 50
 
     males = data_frame[data_frame[2] == 0]
@@ -97,7 +98,7 @@ def render_height_weight_graph(data_frame, sep_line):
     plt.title("Weight and Height for Male vs Female")
     plt.xlabel("Height (ft)")
     plt.ylabel("Weight (lbs)")
-    plt.show()
+    return plt
 
 
 def eq(formula, x_range):
@@ -146,10 +147,8 @@ def get_confusion_matrix(data_frame, sep_line):
 # MAIN:
 
 
-# graph(lambda x, xWeight, yWeight, bias : ((xWeight * x) + bias) / yWeight, 50)
-
 # Data has been generated, so we don't want to regenerate the data.
-# generate_random_data()
+generate_random_data()
 
 df = pd.read_csv(dataFileName, header=None)
 sepLineA = pd.read_csv(sepLineAFileName, header=None)
@@ -173,8 +172,18 @@ print("False Negative:", m[3])
 # # Load just 100 of each category.
 # # Note that Males are 0 - 999 and Females are 1000 - 1999
 # render_height_weight_graph(df[1900:2100], sepLineB)
-render_height_weight_graph(df, sepLineB)
+plt = build_height_weight_plot(df, sepLineB)
+plt.savefig("test")
 
-
-
-print(inspect.getsourcelines(get_confusion_matrix))
+file = open(reportFile, "w")
+file.write(md.h1("Project 1 Report"))
+file.write(md.h2("CMSC 409 - Artificial Intelligence"))
+file.write(md.h2("Steven Hernandez"))
+file.write(md.image("test.png"))
+file.write(md.code(function=get_confusion_matrix))
+file.write(md.table([
+    ["", "Predicted Male", "Predicted Female"],
+    ["Actual Male", m[1], m[2], "test"],
+    ["Actual Female", m[3], m[0]]
+]))
+file.close()
