@@ -25,7 +25,7 @@ def code(text=None, function=None):
     if function is not None:
         text = implode(list(inspect.getsourcelines(function))[0])
 
-    return block_element("```\n" + text + "\n```")
+    return block_element("```\n\n" + text + "\n```")
 
 
 def image(filename, alt_text=""):
