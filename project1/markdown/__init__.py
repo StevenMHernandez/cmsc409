@@ -29,7 +29,7 @@ def code(text=None, function=None):
 
 
 def image(filename, alt_text=""):
-    return block_element("![" + alt_text + "](" + filename + ")")
+    return block_element("\ ![" + alt_text + "](" + filename + ")")
 
 
 def table(contents, header=True):

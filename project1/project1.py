@@ -11,6 +11,7 @@ sepLineBFileName = directory + "sep_line_b.txt"
 reportFileName = "report.md"
 
 area = 50
+alpha = 0.1
 
 
 def generate_random_data():
@@ -39,13 +40,13 @@ def plot_male_and_females(data_frame, remove_y_axis=False):
     males, females = separate_males_and_females(data_frame)
 
     male_x = males[0]
-    male_y = np.full(males[0].shape, 0) if remove_y_axis else males[1]
+    male_y = np.full(males[0].shape, -0.001) if remove_y_axis else males[1]
 
     female_x = females[0]
-    female_y = np.full(males[0].shape, 0) if remove_y_axis else males[1]
+    female_y = np.full(males[0].shape, 0.001) if remove_y_axis else males[1]
 
-    male_plot = plt.scatter(male_x, male_y, s=area, c=np.full(males[2].shape, 'r'), alpha=0.5)
-    female_plot = plt.scatter(female_x, female_y, s=area, c=np.full(females[2].shape, 'g'), alpha=0.5)
+    male_plot = plt.scatter(male_x, male_y, s=area, c=np.full(males[2].shape, 'r'), alpha=alpha)
+    female_plot = plt.scatter(female_x, female_y, s=area, c=np.full(females[2].shape, 'g'), alpha=alpha)
 
     plt.legend((male_plot, female_plot),
                ('Male', 'Female'),
@@ -69,6 +70,9 @@ def build_height_plot(data_frame, sep_line):
     # Plot a vertical line at `x`
     x = sep_line[0][1] / sep_line[0][0]
     plt.plot([x, x], [-0.1, 0.1])
+
+    frame1 = plt.gca()
+    frame1.axes.get_yaxis().set_visible(False)
 
     return plt
 
@@ -195,26 +199,19 @@ save_markdown_report(file, [
         ["x", sepLineA[0][0]],
         ["bias", sepLineA[0][1]]
     ]),
-    md.image("./images/1d.png"),
     md.p("Assuming the following"),
     md.image("./images/net.png"),
     md.p("Or in this situation: "),
     md.p("1 if 0 <= -a(Height) + bias, otherwise 0"),
     md.p("where *a* is some weight and *1* is male and *0* is female."),
+    md.p("In this situation a=" + str(sepLineA[0][0]) + " and bias=" + str(sepLineA[0][1])),
+    md.image("./images/1d.png"),
     md.table([
         ["", "Predicted Male", "Predicted Female"],
         ["Actual Male", errorMatrix1[1], errorMatrix1[2]],
         ["Actual Female", errorMatrix1[3], errorMatrix1[0]]
     ]),
-
-    md.h3("*Scenerio 2:* heights and weights."),
     md.p("**Confusion Matrix**"),
-    md.table([
-        ["", "Weights"],
-        ["x", sepLineB[0][0]],
-        ["y", sepLineB[0][1]],
-        ["bias", sepLineB[0][2]]
-    ]),
     md.table([
         ["", ""],
         ["Error", 1 - ((errorMatrix1[1] + errorMatrix1[0]) / 4000)],
@@ -224,13 +221,24 @@ save_markdown_report(file, [
         ["False Positive Rate", errorMatrix1[3] / 2000],
         ["False Negative Rate", errorMatrix1[2] / 2000],
     ]),
-    md.image("./images/2d.png"),
+
+    md.h3("*Scenerio 2:* heights and weights."),
+    md.table([
+        ["", "Weights"],
+        ["x", sepLineB[0][0]],
+        ["y", sepLineB[0][1]],
+        ["bias", sepLineB[0][2]]
+    ]),
     md.p("Assuming the following"),
     md.image("./images/net.png"),
     md.p("Or in this situation:"),
     md.p("1 if 0 <= a(Height) - b(Weight) + bias, otherwise 0"),
     md.p("where *a* and *b* are some weights and *1* is male and *0* is female."),
-    md.p("where w_i is weight and "),
+    md.p("In this situation a=" + str(sepLineB[0][0]) + " and b=" + str(sepLineB[0][1]) + " and bias=" + str(
+        sepLineB[0][2])),
+    md.image("./images/2d.png"),
+    md.p("Notice, Male and Female are on slightly different levels in this graph"
+         "so that one does not completely cover up the other."),
     md.p("**Confusion Matrix**"),
     md.table([
         ["", "Predicted Male", "Predicted Female"],
@@ -247,16 +255,16 @@ save_markdown_report(file, [
         ["False Negative Rate", errorMatrix2[2] / 2000],
     ]),
 
+    md.h3("Libraries Used"),
+    md.p("matplotlib, numpy, pandas, pandoc"),
+
     md.h3("Selected Code Functions"),
     md.p("Functions used to generate this data and calculations."),
-    md.p("The full code can be found in `project1.py"),
+    md.p("The full code can be found in `./project1.py`"),
     md.code(function=generate_random_data),
     md.code(function=plot_male_and_females),
     md.code(function=plot_male_and_females),
     md.code(function=get_confusion_matrix),
-
-    md.h3("Libraries Used"),
-    md.p("matplotlib, numpy, pandas, markdown2pdf")
 ])
 
 file.close()
@@ -266,4 +274,6 @@ file.close()
 # dependencies installed on your machine
 md2pdf("FINAL_REPORT.pdf", md_file_path=reportFileName)
 
-print("Report generated in ./FINAL_REPORT.pdf")
+print("Markdown Report generated in ./report.md")
+print(
+    "Convert Markdown file to PDF with `pandoc --latex-engine=xelatex -V geometry=margin=1in -s -o FINAL_REPORT.pdf report.md `")

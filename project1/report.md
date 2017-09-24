@@ -4,20 +4,18 @@
 
 ## Steven Hernandez
 
-Fully generated data can be found in `Project1_data/data.txt
+Fully generated data can be found in `./Project1_data/data.txt
 
-### *Scenerio 1* using only height.
+### *Scenerio 1:* using only height.
 
 |  | Weights | 
 | --- | --- | 
 | x | 1.0 | 
 | bias | 5.6 | 
 
-![](./images/1d.png)
-
 Assuming the following
 
-![](./images/net.png)
+\ ![](./images/net.png)
 
 Or in this situation: 
 
@@ -25,20 +23,16 @@ Or in this situation:
 
 where *a* is some weight and *1* is male and *0* is female.
 
+In this situation a=1.0 and bias=5.6
+
+\ ![](./images/1d.png)
+
 |  | Predicted Male | Predicted Female | 
 | --- | --- | --- | 
 | Actual Male | 1774 | 226 | 
 | Actual Female | 371 | 1629 | 
 
-### *Scenerio 2* heights and weights.
-
 **Confusion Matrix**
-
-|  | Weights | 
-| --- | --- | 
-| x | -290 | 
-| y | 1 | 
-| bias | 1860 | 
 
 |  |  | 
 | --- | --- | 
@@ -49,11 +43,17 @@ where *a* is some weight and *1* is male and *0* is female.
 | False Positive Rate | 0.1855 | 
 | False Negative Rate | 0.113 | 
 
-![](./images/2d.png)
+### *Scenerio 2:* heights and weights.
+
+|  | Weights | 
+| --- | --- | 
+| x | -290 | 
+| y | 1 | 
+| bias | 1860 | 
 
 Assuming the following
 
-![](./images/net.png)
+\ ![](./images/net.png)
 
 Or in this situation:
 
@@ -61,7 +61,11 @@ Or in this situation:
 
 where *a* and *b* are some weights and *1* is male and *0* is female.
 
-where w_i is weight and 
+In this situation a=-290 and b=1 and bias=1860
+
+\ ![](./images/2d.png)
+
+Notice, Male and Female are on slightly different levels in this graphso that one does not completely cover up the other.
 
 **Confusion Matrix**
 
@@ -79,11 +83,15 @@ where w_i is weight and
 | False Positive Rate | 0.0185 | 
 | False Negative Rate | 0.29 | 
 
+### Libraries Used
+
+matplotlib, numpy, pandas, pandoc
+
 ### Selected Code Functions
 
 Functions used to generate this data and calculations.
 
-The full code can be found in `project1.py
+The full code can be found in `./project1.py`
 
 ```
 
@@ -111,13 +119,13 @@ def plot_male_and_females(data_frame, remove_y_axis=False):
     males, females = separate_males_and_females(data_frame)
 
     male_x = males[0]
-    male_y = np.full(males[0].shape, 0) if remove_y_axis else males[1]
+    male_y = np.full(males[0].shape, -0.001) if remove_y_axis else males[1]
 
     female_x = females[0]
-    female_y = np.full(males[0].shape, 0) if remove_y_axis else males[1]
+    female_y = np.full(males[0].shape, 0.001) if remove_y_axis else males[1]
 
-    male_plot = plt.scatter(male_x, male_y, s=area, c=np.full(males[2].shape, 'r'), alpha=0.5)
-    female_plot = plt.scatter(female_x, female_y, s=area, c=np.full(females[2].shape, 'g'), alpha=0.5)
+    male_plot = plt.scatter(male_x, male_y, s=area, c=np.full(males[2].shape, 'r'), alpha=alpha)
+    female_plot = plt.scatter(female_x, female_y, s=area, c=np.full(females[2].shape, 'g'), alpha=alpha)
 
     plt.legend((male_plot, female_plot),
                ('Male', 'Female'),
@@ -142,13 +150,13 @@ def plot_male_and_females(data_frame, remove_y_axis=False):
     males, females = separate_males_and_females(data_frame)
 
     male_x = males[0]
-    male_y = np.full(males[0].shape, 0) if remove_y_axis else males[1]
+    male_y = np.full(males[0].shape, -0.001) if remove_y_axis else males[1]
 
     female_x = females[0]
-    female_y = np.full(males[0].shape, 0) if remove_y_axis else males[1]
+    female_y = np.full(males[0].shape, 0.001) if remove_y_axis else males[1]
 
-    male_plot = plt.scatter(male_x, male_y, s=area, c=np.full(males[2].shape, 'r'), alpha=0.5)
-    female_plot = plt.scatter(female_x, female_y, s=area, c=np.full(females[2].shape, 'g'), alpha=0.5)
+    male_plot = plt.scatter(male_x, male_y, s=area, c=np.full(males[2].shape, 'r'), alpha=alpha)
+    female_plot = plt.scatter(female_x, female_y, s=area, c=np.full(females[2].shape, 'g'), alpha=alpha)
 
     plt.legend((male_plot, female_plot),
                ('Male', 'Female'),
@@ -224,8 +232,4 @@ def get_confusion_matrix(data_frame, sep_line):
             false_negative)
 
 ```
-
-### Libraries Used
-
-matplotlib, numpy, pandas, markdown2pdf
 
