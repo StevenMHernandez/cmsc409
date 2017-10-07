@@ -1,6 +1,11 @@
 import inspect
 
 
+def save_markdown_report(file, arr):
+    for block in arr:
+        file.write(block)
+
+
 def block_element(text):
     return text + "\n\n"
 
