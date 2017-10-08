@@ -243,15 +243,18 @@ def render(plt, hard=True, sampleFraction=0.25):
 def build_report():
     file = open(reportFileName, "w")
     project1.save_markdown_report(file, [
-        md.h1("Project 2 Report"),
-        md.h2("CMSC 409 - Artificial Intelligence"),
-        md.h2("Steven Hernandez"),
+        md.meta_data("Project 2 Report - CMSC 409 - Artificial Intelligence", "Steven Hernandez"),
+        md.p("You will notice for each scenario, there are 4 graphs."),
+        md.table([
+            ["Final sep_line after learning", "Graph of all sep_lines during learning"],
+            ["Graph of errors (blue: training set error, gray: testing set error)", "Change of weights over time."]
+        ], width=40),
     ])
 
     for activation_type in ("hard", "soft"):
         for sample_size in ("25", "50", "75"):
             project1.save_markdown_report(file, [
-                md.h3(activation_type + " activation with a sample size of " + sample_size + "%"),
+                md.h3(str.title(activation_type + " activation with a sample size of " + sample_size + "%")),
                 md.images([
                     ["./images/project2/" + activation_type + "/" + sample_size + "_start_end_lines.png", ""],
                     ["./images/project2/" + activation_type + "/" + sample_size + "_all_sep_lines.png", ""],
@@ -260,6 +263,7 @@ def build_report():
                     ["./images/project2/" + activation_type + "/" + sample_size + "_error.png", "errors"],
                     ["./images/project2/" + activation_type + "/" + sample_size + "_weights.png", "weights"],
                 ]),
+                md.page_break(),
             ])
 
     file.close()
@@ -269,13 +273,13 @@ def build_report():
 
 
 def main(plt):
-    render(plt, hard=True, sampleFraction=0.25)
-    render(plt, hard=True, sampleFraction=0.5)
-    render(plt, hard=True, sampleFraction=0.75)
+    # render(plt, hard=True, sampleFraction=0.25)
+    # render(plt, hard=True, sampleFraction=0.5)
+    # render(plt, hard=True, sampleFraction=0.75)
 
-    render(plt, hard=False, sampleFraction=0.25)
-    render(plt, hard=False, sampleFraction=0.5)
-    render(plt, hard=False, sampleFraction=0.75)
+    # render(plt, hard=False, sampleFraction=0.25)
+    # render(plt, hard=False, sampleFraction=0.5)
+    # render(plt, hard=False, sampleFraction=0.75)
 
     build_report()
 

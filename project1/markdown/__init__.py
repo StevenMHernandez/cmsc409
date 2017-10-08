@@ -1,6 +1,20 @@
 import inspect
 
 
+def meta_data(title, author):
+    string = """---
+title: "{0}"
+author: "{1}"
+header-includes:
+- \\usepackage{{fancyhdr}}
+- \\pagestyle{{fancy}}
+- \\fancyhead[CO,CE]{{{0} - {1}}}
+---
+    """
+
+    return block_element(string.format(title, author))
+
+
 def save_markdown_report(file, arr):
     for block in arr:
         file.write(block)
@@ -46,14 +60,14 @@ def images(images=[]):
     return block_element(str)
 
 
-def table(contents, header=True):
+def table(contents, header=True, width=3):
     table = "| "
     for x in contents[0]:
         table += x + " | "
 
     table += "\n| "
     for x in contents[0]:
-        table += "--- | "
+        table += ("-" * width) + " | "
 
     for i in range(1, len(contents)):
         table += "\n| "
@@ -65,3 +79,7 @@ def table(contents, header=True):
 
 def implode(array, glue=''):
     return glue.join([str(i) for i in array])
+
+
+def page_break():
+    return block_element("\pagebreak")
