@@ -34,7 +34,16 @@ def code(text=None, function=None):
 
 
 def image(filename, alt_text=""):
-    return block_element("\ ![" + alt_text + "](" + filename + ")")
+    return images([filename, alt_text])
+
+
+def images(images=[]):
+    str = ""
+
+    for i in images:
+        str += "\ ![" + i[1] + "](" + i[0] + "){#id .class width=300 height=200} "
+
+    return block_element(str)
 
 
 def table(contents, header=True):
