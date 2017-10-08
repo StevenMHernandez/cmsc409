@@ -62,6 +62,8 @@ def plot_male_and_females(data_frame, remove_y_axis=False):
         plt.xlabel("Height (ft)")
         plt.ylabel("Weight (lbs)")
 
+    return plt
+
 
 def build_height_plot(data_frame, sep_line):
     plot_male_and_females(data_frame, remove_y_axis=True)
@@ -104,14 +106,20 @@ def eq(formula, x_range):
 
 
 # returns 0 for female, 1 for male
-def get_output_for_row(row, sep_line):
-    height = row[0]
-    weight = row[1]
-    x_weight = sep_line[0]
-    y_weight = sep_line[1]
-    bias = sep_line[2]
+def get_output_for_row(current_pattern, current_weight):
+    net = (current_weight[0] * current_pattern[0] +
+           current_weight[1] * current_pattern[1] +
+           current_weight[2])
 
-    return (x_weight * height) + bias - (y_weight * weight) < 0
+    return 1 if net > 0 else 0
+
+
+def get_soft_output_for_row(current_pattern, current_weight, k=0.3):
+    net = (current_weight[0] * current_pattern[0] +
+           current_weight[1] * current_pattern[1] +
+           current_weight[2])
+
+    return np.tanh(net * 0.5)
 
 
 def get_confusion_matrix(data_frame, sep_line):
@@ -179,13 +187,13 @@ def main():
     errorMatrix1 = get_confusion_matrix(df, sepLineA)
     errorMatrix2 = get_confusion_matrix(df, sepLineB)
 
-    plt = build_height_plot(df, sepLineA)
-    plt.savefig("images/1d")
-    plt.gcf().clear()
+    myPlt = build_height_plot(df, sepLineA)
+    myPlt.savefig("images/1d")
+    myPlt.gcf().clear()
 
-    plt = build_height_weight_plot(df, sepLineB)
-    plt.savefig("images/2d")
-    plt.gcf().clear()
+    myPlt = build_height_weight_plot(df, sepLineB)
+    myPlt.savefig("images/2d")
+    myPlt.gcf().clear()
 
     file = open(reportFileName, "w")
 
@@ -272,14 +280,9 @@ def main():
 
     file.close()
 
-    # Commented out in case YOU do not have all of the required
-    # (https://github.com/jmaupetit/md2pdf#troubleshooting-on-macosx)
-    # dependencies installed on your machine
-    # md2pdf("FINAL_REPORT.pdf", md_file_path=reportFileName)
-
     print("Markdown Report generated in ./report.md")
     print("Convert Markdown file to PDF with ")
-    print("`pandoc --latex-engine=xelatex -V geometry=margin=1in -s -o FINAL_REPORT.pdf report.md `")
+    print("`pandoc --latex-engine=xelatex -V geometry=margin=1in -s -o FINAL_REPORT.pdf report.md`")
 
 
 if __name__ == "__main__":
