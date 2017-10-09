@@ -244,15 +244,80 @@ def build_report():
     file = open(reportFileName, "w")
     project1.save_markdown_report(file, [
         md.meta_data("Project 2 Report - CMSC 409 - Artificial Intelligence", "Steven Hernandez"),
-        md.p("You will notice for each scenario, there are 4 graphs."),
+        md.p(
+            "You will notice for each scenario (on the following pages), there are 4 graphs. These graphs are described in the table below."),
         md.table([
             ["Final sep_line after learning", "Graph of all sep_lines during learning"],
-            ["Graph of errors (blue: training set error, gray: testing set error)", "Change of weights over time."]
+            ["Graph of errors (blue: training set error, gray: testing set error)",
+             "Change of weights over time. (red: x_weight, green: y_weight, blue: bias)"]
         ], width=40),
+    ])
+
+    final_training_errors = {
+        "hard": [],
+        "soft": [],
+    }
+
+    final_testing_errors = {
+        "hard": [],
+        "soft": [],
+    }
+
+    for activation_type in ("hard", "soft"):
+        for sample_size in ("25", "50", "75"):
+            # Calculate errors
+            train_error_df = pd.read_csv("./data/project2/" + activation_type + "/" + sample_size + "_errors.txt",
+                                         header=None)
+            test_error_df = pd.read_csv("./data/project2/" + activation_type + "/" + sample_size + "_total_errors.txt",
+                                        header=None)
+
+            final_training_errors[activation_type].append(str(train_error_df[0].iloc[-1]))
+            final_testing_errors[activation_type].append(str(test_error_df[0].iloc[-1]))
+
+    project1.save_markdown_report(file, [
+        md.h4("Error for training set across each different scenario."),
+        md.table([
+            ["", "25%", "50%", "75%"],
+            ["Hard", final_training_errors["hard"][0], final_training_errors["hard"][1],
+             final_training_errors["hard"][2]],
+            ["Soft", final_training_errors["soft"][0], final_training_errors["soft"][1],
+             final_training_errors["soft"][2]],
+        ], width=15),
+        md.h4("Error for testing set across each different scenario."),
+        md.table([
+            ["", "25%", "50%", "75%"],
+            ["Hard", final_testing_errors["hard"][0], final_testing_errors["hard"][1], final_testing_errors["hard"][2]],
+            ["Soft", final_testing_errors["soft"][0], final_testing_errors["soft"][1], final_testing_errors["soft"][2]],
+        ], width=15),
+        md.p("""As we can see, **soft** activation results in the lowest error compared to **hard** activation.
+             We can see that while soft activation with 75% training data results in the lowest error for the training set,
+             soft activation with 50% training data actually does better for the testing set."""),
+        md.p("""Based on the graphs for `% error over iterations`,
+             we can see that error jumps around quite extremely for **hard** activation. 
+             As a result, it seems we do not actually end up with the best error. 
+             For example, you will see in the *Errors* table for Hard activation with sample size 75%, 
+             the final error was 0.152% while the best error had actually been 0.073% 
+             (which happened to have happened quite early on iteration 39). 
+             It might be the case that we need to lower alpha for these graphs. 
+             **Soft** activation on the other hand smoothly moves towards it's best value"""),
+        md.p("""On that point, it seems to be the case that **soft** activation reaches just about its best accuracy 
+             after the first iteration (after going through each item in the training set once)."""),
+        md.p("""Surprisingly, Hard activation with 75% training results in the best overall error of 0.073%.
+             Unfortunately, this error was not the final output from training and as such was lost. 
+             """),
+        md.page_break(),
     ])
 
     for activation_type in ("hard", "soft"):
         for sample_size in ("25", "50", "75"):
+            # Calculate errors
+            train_error_df = pd.read_csv("./data/project2/" + activation_type + "/" + sample_size + "_errors.txt",
+                                         header=None)
+            test_error_df = pd.read_csv("./data/project2/" + activation_type + "/" + sample_size + "_total_errors.txt",
+                                        header=None)
+            weights_df = pd.read_csv("./data/project2/" + activation_type + "/" + sample_size + "_weights.txt",
+                                     header=None)
+
             project1.save_markdown_report(file, [
                 md.h3(str.title(activation_type + " activation with a sample size of " + sample_size + "%")),
                 md.images([
@@ -263,8 +328,28 @@ def build_report():
                     ["./images/project2/" + activation_type + "/" + sample_size + "_error.png", "errors"],
                     ["./images/project2/" + activation_type + "/" + sample_size + "_weights.png", "weights"],
                 ]),
+                md.h4("Errors"),
+                md.table([
+                    ["", "Training Set Error", "Test Set Error"],
+                    ["Start", str(train_error_df[0].iloc[0]), str(test_error_df[0].iloc[0])],
+                    ["End", str(train_error_df[0].iloc[-1]), str(test_error_df[0].iloc[-1])],
+                    ["Best", str(train_error_df[0].min()), str(test_error_df[0].min())],
+                ], width=15),
+                md.h4("Weights"),
+                md.table([
+                    ["", "x_weight", "y_weight", "bias"],
+                    ["Random initial", str(weights_df[0].iloc[0]), str(weights_df[1].iloc[0]),
+                     str(weights_df[2].iloc[0])],
+                    ["Final", str(weights_df[0].iloc[-1]), str(weights_df[1].iloc[-1]), str(weights_df[2].iloc[-1])],
+                ], width=10),
                 md.page_break(),
             ])
+
+    project1.save_markdown_report(file, [
+        md.h3("This project uses code from `project1.py` from last time as well as new code from `project2.py`"),
+        md.code(file="project2.py"),
+        md.code(file="project1.py"),
+    ])
 
     file.close()
 

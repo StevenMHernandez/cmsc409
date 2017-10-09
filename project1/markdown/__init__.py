@@ -40,9 +40,17 @@ def h3(text):
     return block_element("### " + text)
 
 
-def code(text=None, function=None):
+def h4(text):
+    return block_element("#### " + text)
+
+
+def code(text=None, function=None, file=None):
     if function is not None:
         text = implode(list(inspect.getsourcelines(function))[0])
+    if file is not None:
+        with open(file, 'r') as myfile:
+            text = "# " + file + "\n"
+            text += myfile.read()
 
     return block_element("```\n\n" + text + "\n```")
 
