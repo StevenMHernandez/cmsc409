@@ -68,27 +68,33 @@ def images(images=[]):
     return block_element(str)
 
 
+def ol(items=[], alpha=False):
+    str = ""
+
+    for i in items:
+        if alpha:
+            str += "a. "
+        else:
+            str += "1. "
+
+        str += i + "\n"
+
+    return block_element(str)
+
+
 def table(contents, header=True, width=3):
-    table = "+"
+    table = "| "
     for x in contents[0]:
-        table += ("-" * (width + 2)) + "+"
+        table += x + " | "
 
     table += "\n| "
     for x in contents[0]:
-        table += x + (" " * (width - len(x))) + " | "
-
-    table += "\n+"
-    for x in contents[0]:
-        table += ("=" * (width + 2)) + "+"
+        table += ("-" * width) + " | "
 
     for i in range(1, len(contents)):
         table += "\n| "
         for x in contents[i]:
-            table += str(x) + (" " * (width - len(str(x)))) + " | "
-
-    table += "\n+"
-    for x in contents[0]:
-        table += ("-" * (width + 2)) + "+"
+            table += str(x) + " | "
 
     return block_element(table)
 
