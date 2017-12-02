@@ -1,6 +1,7 @@
 import re
 import os
 import math
+import numpy as np
 import examplecode.Porter_Stemmer_Python as PorterStemmer
 import markdown as md
 
@@ -107,7 +108,19 @@ def create_feature_vector(minimum_occurrences=0):
 
 # Split table columns when table is too wide
 def split_table(tableContents, start, end):
-    return list(map(lambda row: row[start:end], tableContents))
+    split = list(map(lambda row: row[start:end], tableContents))
+
+    def add_number_to_vector(tuple):
+        vector = tuple[1]
+
+        if tuple[0] == 0:
+            vector.insert(0, "sentence #")
+        else:
+            vector.insert(0, str(tuple[0]))
+
+        return vector
+
+    return list(map(add_number_to_vector, enumerate(split)))
 
 
 # Split table rows when table takes up too many pages
@@ -137,8 +150,99 @@ def split_table_rows(title_contents, table_contents, max_rows):
     return table
 
 
+def get_closest_cluster(cluster_weights, current_pattern):
+    cluster_distances = np.zeros(len(cluster_weights))
+
+    # Euclidean distance:
+
+    # For each cluster
+    for i in range(len(cluster_weights)):
+        cluster_distances[i] = 0
+
+        # For each word
+        for j in range(len(current_pattern)):
+            val = pow((current_pattern[j] - cluster_weights[i][j]), 2)
+            cluster_distances[i] += val
+
+    least_distance_index = 0
+
+    for i in range(len(cluster_distances)):
+        if cluster_distances[i] < cluster_distances[least_distance_index]:
+            least_distance_index = i
+
+    return least_distance_index
+
+
+def calculate_change_in_weight(current_weights, current_pattern):
+    epsilon = 0.05
+    return epsilon * (current_pattern - current_weights)
+
+
+def learn_wta(data, cluster_count=1):
+    seed = 9
+    # Create randomly initialized weights for the number of expected clusters
+    # Each of these weight sets with len(data[0]) number of weights
+    weights = np.random.rand(cluster_count, len(data[0]))
+
+    for i in range(1000):
+        # shuffle(data)
+        for pattern in data:
+            index = get_closest_cluster(weights, pattern)
+            weights[index] += calculate_change_in_weight(weights[index], pattern)
+
+    return weights
+
+
+def split_sentences_into_clusters(learned_weights, data):
+    clustered_sentences = []
+
+    for _ in learned_weights:
+        clustered_sentences.append([])
+
+    sentences = open("sentences/sentences.txt", 'r').read().split('\n')
+
+    for i in range(len(data)):
+        index = get_closest_cluster(learned_weights, data[i])
+        clustered_sentences[index].append((i, sentences[i]))
+
+    return clustered_sentences
+
+
+def normalize_feature_vector(feature_vector):
+    word_count = len(feature_vector[0])
+    max_values = np.zeros(word_count)
+
+    for i in range(word_count):
+        for sentence_vector in feature_vector:
+            if sentence_vector[i] > max_values[i]:
+                max_values[i] = sentence_vector[i]
+
+    for i in range(len(feature_vector)):
+        for j in range(word_count):
+            # feature_vector[i][j] = feature_vector[i][j] / max_values[j] + 1
+            feature_vector[i][j] = 1 if feature_vector[i][j] else 0
+
+    return feature_vector
+
+
 def main():
-    table = [get_encountered_words(minimum_occurrences=2)] + create_feature_vector(minimum_occurrences=2)
+    feature_vector = create_feature_vector(minimum_occurrences=2)
+
+    table = [get_encountered_words(minimum_occurrences=2)] + feature_vector
+
+    normalized_feature_vector = normalize_feature_vector(feature_vector)
+
+    result = learn_wta(normalized_feature_vector, cluster_count=80)
+
+    clustered_sentences = split_sentences_into_clusters(result, normalized_feature_vector)
+
+    clustered_sentences = list(filter(lambda x: x, clustered_sentences))
+
+    def sentence_tuple_to_str(tuple):
+        return str(tuple[0]) + ") " + tuple[1]
+
+    clustered_sentence_strings = list(
+        map(lambda cluster: list(map(sentence_tuple_to_str, cluster)), clustered_sentences))
 
     file = open(reportFileName, "w")
     md.save_markdown_report(file, [
@@ -185,7 +289,70 @@ def main():
         md.table(split_table(table, 0, math.floor(len(table[0]) / 2)), width=20),
         md.page_break(),
         md.table(split_table(table, math.floor(len(table[0]) / 2) + 1, len(table[0])), width=20),
+        md.page_break(),
+        md.h2("Learning"),
+        md.p("We begin learning by using the 'Winner Takes All' (WTA) method which means that we begin with `n` "
+             "clusters, then iterating for each document, we find the closest cluster using euclidean "
+             "distance. Depending on which cluster's center (based on weight) is closest to the new document, "
+             "the cluster's center's weight is changed by a value to better match the resulting pattern. Code below: "),
+        md.code(function=learn_wta),
+        md.code(function=get_closest_cluster),
+        md.code(function=calculate_change_in_weight),
+        md.page_break(),
+        md.h3("Learned clusters:"),
     ])
+
+    # Show resulting clusters
+    for i in range(len(clustered_sentence_strings)):
+        md.save_markdown_report(file, [
+            md.p("Cluster " + str(i + 1) + ":"),
+            md.li(clustered_sentence_strings[i]),
+        ])
+
+    # Show bit representation of sentence vectors
+    md.save_markdown_report(file, [
+        md.p("If we look at the feature vectors as a bit map showing whether a sentence has or does not have "
+             "a specific word, we can begin to see the pattern of the clustering method."),
+    ])
+
+    def sentence_tuple_to_bit_string(tuple):
+        return str(tuple[0]) + ") " + feature_vector_to_bit_string(feature_vector[tuple[0]])
+
+    def feature_vector_to_bit_string(vector):
+        return ''.join(map(str, vector))
+
+    for i in range(len(clustered_sentences)):
+        md.save_markdown_report(file, [
+            md.p("Cluster " + str(i + 1) + ":"),
+            md.li(list(map(sentence_tuple_to_bit_string, clustered_sentences[i]))),
+        ])
+
+    md.save_markdown_report(file, [
+        md.p("From these bit maps, we can see that each cluster has relatively distinct columns which match"
+             "across the documents of the cluster."),
+        md.p("Of course, this clustering does split some groups of documents into more clusters than expected. "
+             "Some clusters seem as if they could be combined to the human views. Having additional sample documents "
+             "would very likely help with this issue. With these few number of documents, for example, sentence 12 "
+             "'Three parking spaces in back, pets are possible with approval from the owner.' does not mention "
+             "being about a 'home' or many other words which are used in other documents that truly identify it"
+             "as being about a home. With more documents, we would begin to have more overlap, which could "
+             "aid in finding which words provide us the most importance."),
+        md.p("One problem of this method compared to a method where clusters a created as needed, was that if the "
+             "random initialization of weights for the cluster were randomly generated in a bad spot, it is likely "
+             "the cluster would never contain any sentences because (as the name implies) the Winner Takes All method"
+             "would often find one cluster taking over most of the documents, while other clusters remained empty."),
+        md.p("The solution taken here for this problem was to learn on many randomly placed clusters. Learning "
+             "began with 80 clusters. From these 80 clusters however, we only end up with "
+             + str(len(clustered_sentences)) +
+             " clusters. Additionally, (during testing) it would some times "
+             "result in clusters with only a single result, when the result would have worked better "
+             "in some other already defined cluster."),
+        md.p("In addition to having more documents to sample, having clusters only as needed would likely improve this "
+             "situation. With clusters-as-needed, clusters would only be able to contain documents within some radius "
+             "of the cluster's center. If a document is found outside of this radius, then a new cluster would be "
+             "formed in this place.")
+    ])
+
     file.close()
 
     print("Markdown Report generated in ./report4.md")

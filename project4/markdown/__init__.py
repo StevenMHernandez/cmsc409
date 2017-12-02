@@ -68,6 +68,15 @@ def images(images=[]):
     return block_element(str)
 
 
+def li(items=[]):
+    str = ""
+
+    for i in items:
+        str += "* " + i + "\n"
+
+    return block_element(str)
+
+
 def ol(items=[], alpha=False):
     str = ""
 
