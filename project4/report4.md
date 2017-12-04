@@ -83,6 +83,37 @@ On the following page is a table listing all of these root words along with the 
 
 \pagebreak
 
+The following lists the root words with greater than 2occurrences:
+
+| Root Word | \# of instances | 
+| -------------------------------------------------- | -------------------------------------------------- | 
+| autonom | 5 | 
+| sedan | 3 | 
+| road | 5 | 
+| mile | 10 | 
+| per | 7 | 
+| hour | 6 | 
+| machin | 6 | 
+| learn | 5 | 
+| artifici | 6 | 
+| intellig | 11 | 
+| car | 5 | 
+| kilomet | 6 | 
+| home | 4 | 
+| bedroom | 7 | 
+| bath | 3 | 
+| live | 4 | 
+| room | 4 | 
+| larg | 3 | 
+| kitchen | 5 | 
+| size | 4 | 
+| around | 4 | 
+| hous | 3 | 
+| come | 3 | 
+| updat | 3 | 
+
+\pagebreak
+
 The following 2 tables show the distribution of root words which appear at least 2 times across each document (with each row indicating one sentence) (This is the Term Document Matrix **TDM**)
 
 | sentence # | autonom | sedan | road | mile | per | hour | machin | learn | artifici | intellig | car | kilomet | 
@@ -213,17 +244,17 @@ def calculate_change_in_weight(current_weights, current_pattern):
 
 Cluster 1:
 
-* 1) On future of machine learning, Ray Kurzweil has predicted that we are only 28 years away from the Singularity or when self-improving artificial super-intelligence will far exceed human intelligence.
-* 5) Musk said that the way to escape human obsolescence may be by having some sort of merger of biological intelligence and machine intelligence.
-* 9) While artificial intelligence could possibly lead to intelligence in machines with machine learning, intelligence will not necessarily lead to sentience.
-* 14) Artificial intelligence is combining two paradigms, that everything that we know about our reality comes by way of our senses, and that the knowledge comes from our experiences via five senses.
-* 18) John McCarthy, inventor of the programming language LISP, coined the term “artificial intelligence” in 1955.
-* 21) General Artificial Intelligence -t he self-aware computer programs that can engage in common-sense reasoning and learning, attain knowledge in multiple domains, feel, express and understand emotions.
-* 23) Ray Kurzweil, author of the 1999 book The Age of Spiritual Machines described that intelligence would spread throughout the cosmos.
-* 26) Recent artificial intelligence work has been fundamental, with techniques like deep learning laying the groundwork for computers that can automatically through machine learning increase their understanding of the world around them.
+* 11) Four bedroom 3 bath row house, home comes with 2 washers and 2 dryers and finished basement. 
+* 22) Single family home with 5 bedroom and 2.5 bath, conveniently located near all major routes.
 
 
 Cluster 2:
+
+* 0) The autonomous sedan will be able to travel on any type of road at speeds of up to 60 miles per hour.
+* 8) The autonomous sedan will do a lap or 2 at around 250 kilometers per hour (149 miles per hour).
+
+
+Cluster 3:
 
 * 3) Newly remodeled home for rent, 4 bedrooms with 1 bath, living room, large eat in kitchen with a full sized utility room.
 * 6) Entire interior of home is freshly painted, large living room and bedroom.
@@ -231,8 +262,9 @@ Cluster 2:
 * 27) Two bedroom 1 bathroom townhouse, central heat and air, water trash sewage included, living room, eat in kitchen.
 
 
-Cluster 3:
+Cluster 4:
 
+* 2) This gets the car from 0 to 60 miles per hour (that is, to 97 kilometers per hour) in 3.2 seconds.
 * 4) On the road test, we were able to achieve a range of 220 kilometers (around 138 miles) on a charge.
 * 7) The car will go 443 kilometers (275 miles) on a charge, up 3.7 percent from before.
 * 10) All appliances are included, as well as security system, tenant is responsible for electric and water gas, pets negotiable based on animal.
@@ -243,29 +275,60 @@ Cluster 3:
 * 19) The car had to autonomously deal with a number of situations on the road.
 * 20) Over 839 miles of driving, we averaged 29 miles per gallon, for the 3317 pound sedan.
 * 24) Very cute and classy house with open living area and kitchen, kitchen is updated with great appliances.
-
-
-Cluster 4:
-
-* 0) The autonomous sedan will be able to travel on any type of road at speeds of up to 60 miles per hour.
-* 8) The autonomous sedan will do a lap or 2 at around 250 kilometers per hour (149 miles per hour).
+* 25) The car went round the 3 mile off road lap in 11 minutes and 50 seconds, which is an average of around 15 miles per hour.
 
 
 Cluster 5:
 
-* 2) This gets the car from 0 to 60 miles per hour (that is, to 97 kilometers per hour) in 3.2 seconds.
-* 25) The car went round the 3 mile off road lap in 11 minutes and 50 seconds, which is an average of around 15 miles per hour.
-
-
-Cluster 6:
-
-* 11) Four bedroom 3 bath row house, home comes with 2 washers and 2 dryers and finished basement. 
-* 22) Single family home with 5 bedroom and 2.5 bath, conveniently located near all major routes.
+* 1) On future of machine learning, Ray Kurzweil has predicted that we are only 28 years away from the Singularity or when self-improving artificial super-intelligence will far exceed human intelligence.
+* 5) Musk said that the way to escape human obsolescence may be by having some sort of merger of biological intelligence and machine intelligence.
+* 9) While artificial intelligence could possibly lead to intelligence in machines with machine learning, intelligence will not necessarily lead to sentience.
+* 14) Artificial intelligence is combining two paradigms, that everything that we know about our reality comes by way of our senses, and that the knowledge comes from our experiences via five senses.
+* 18) John McCarthy, inventor of the programming language LISP, coined the term “artificial intelligence” in 1955.
+* 21) General Artificial Intelligence -t he self-aware computer programs that can engage in common-sense reasoning and learning, attain knowledge in multiple domains, feel, express and understand emotions.
+* 23) Ray Kurzweil, author of the 1999 book The Age of Spiritual Machines described that intelligence would spread throughout the cosmos.
+* 26) Recent artificial intelligence work has been fundamental, with techniques like deep learning laying the groundwork for computers that can automatically through machine learning increase their understanding of the world around them.
 
 
 If we look at the feature vectors as a bit map showing whether a sentence has or does not have a specific word, we can begin to see the pattern of the clustering method.
 
 Cluster 1:
+
+* 11) 000000000000111000000110
+* 22) 000000000000111000000000
+
+
+Cluster 2:
+
+* 0) 111111000000000000000000
+* 8) 110111000001000000001000
+
+
+Cluster 3:
+
+* 3) 000000000000111111110000
+* 6) 000000000000110111000000
+* 15) 000000000000010001010000
+* 27) 000000000000010110100000
+
+
+Cluster 4:
+
+* 2) 000111000011000000000000
+* 4) 001100000001000000001000
+* 7) 000100000011000000000000
+* 10) 000000000000000000000000
+* 12) 000000000000000000000000
+* 13) 101000000011000000000000
+* 16) 100100000001000000000000
+* 17) 000000000000000000100101
+* 19) 101000000010000000000000
+* 20) 010110000000000000000000
+* 24) 000000000000000100100101
+* 25) 001111000010000000001000
+
+
+Cluster 5:
 
 * 1) 000000111100000000000000
 * 5) 000000100100000000000000
@@ -277,53 +340,65 @@ Cluster 1:
 * 26) 000000111100000000001000
 
 
+From these bit maps, we can see that each cluster has relatively distinct columns which matchacross the documents of the cluster.
+
+Of course, this clustering does split some groups of documents into more clusters than expected. Some clusters seem as if they could be combined to the human views. Having additional sample documents would very likely help with this issue. With these few number of documents, for example, sentence 12 'Three parking spaces in back, pets are possible with approval from the owner.' does not mention being about a 'home' or many other words which are used in other documents that truly identify itas being about a home. With more documents, we would begin to have more overlap, which could aid in finding which words provide us the most importance. Sentence 10 as well does not share enoughwords to be able to identify it with the provided documents.
+
+Below, we can see which words these sentences share in common.
+
+Cluster 1:
+
+* 11) home, bedroom, bath, hous, come
+* 22) home, bedroom, bath
+
+
 Cluster 2:
 
-* 3) 000000000000111111110000
-* 6) 000000000000110111000000
-* 15) 000000000000010001010000
-* 27) 000000000000010110100000
+* 0) autonom, sedan, road, mile, per, hour
+* 8) autonom, sedan, mile, per, hour, kilomet, around
 
 
 Cluster 3:
 
-* 4) 001100000001000000001000
-* 7) 000100000011000000000000
-* 10) 000000000000000000000000
-* 12) 000000000000000000000000
-* 13) 101000000011000000000000
-* 16) 100100000001000000000000
-* 17) 000000000000000000100101
-* 19) 101000000010000000000000
-* 20) 010110000000000000000000
-* 24) 000000000000000100100101
+* 3) home, bedroom, bath, live, room, larg, kitchen, size
+* 6) home, bedroom, live, room, larg
+* 15) bedroom, larg, size
+* 27) bedroom, live, room, kitchen
 
 
 Cluster 4:
 
-* 0) 111111000000000000000000
-* 8) 110111000001000000001000
+* 2) mile, per, hour, car, kilomet
+* 4) road, mile, kilomet, around
+* 7) mile, car, kilomet
+* 10) 
+* 12) 
+* 13) autonom, road, car, kilomet
+* 16) autonom, mile, kilomet
+* 17) kitchen, hous, updat
+* 19) autonom, road, car
+* 20) sedan, mile, per
+* 24) live, kitchen, hous, updat
+* 25) road, mile, per, hour, car, around
 
 
 Cluster 5:
 
-* 2) 000111000011000000000000
-* 25) 001111000010000000001000
+* 1) machin, learn, artifici, intellig
+* 5) machin, intellig
+* 9) machin, learn, artifici, intellig
+* 14) artifici, intellig, come
+* 18) artifici, intellig
+* 21) learn, artifici, intellig
+* 23) machin, intellig
+* 26) machin, learn, artifici, intellig, around
 
-
-Cluster 6:
-
-* 11) 000000000000111000000110
-* 22) 000000000000111000000000
-
-
-From these bit maps, we can see that each cluster has relatively distinct columns which matchacross the documents of the cluster.
-
-Of course, this clustering does split some groups of documents into more clusters than expected. Some clusters seem as if they could be combined to the human views. Having additional sample documents would very likely help with this issue. With these few number of documents, for example, sentence 12 'Three parking spaces in back, pets are possible with approval from the owner.' does not mention being about a 'home' or many other words which are used in other documents that truly identify itas being about a home. With more documents, we would begin to have more overlap, which could aid in finding which words provide us the most importance.
 
 One problem of this method compared to a method where clusters a created as needed, was that if the random initialization of weights for the cluster were randomly generated in a bad spot, it is likely the cluster would never contain any sentences because (as the name implies) the Winner Takes All methodwould often find one cluster taking over most of the documents, while other clusters remained empty.
 
-The solution taken here for this problem was to learn on many randomly placed clusters. Learning began with 80 clusters. From these 80 clusters however, we only end up with 6 clusters. Additionally, (during testing) it would some times result in clusters with only a single result, when the result would have worked better in some other already defined cluster.
+The solution taken here for this problem was to learn on many randomly placed clusters. Learning began with 20 clusters. From these 20 clusters however, we only end up with 5 clusters. Additionally, (during testing) it would some times result in clusters with only a single result, when the result would have worked better in some other already defined cluster.
+
+With fewer clusters (for example 4), we occasionally ended up with good results, but often would end upwith most documents stuck in one single cluster
 
 In addition to having more documents to sample, having clusters only as needed would likely improve this situation. With clusters-as-needed, clusters would only be able to contain documents within some radius of the cluster's center. If a document is found outside of this radius, then a new cluster would be formed in this place.
 

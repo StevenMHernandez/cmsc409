@@ -15,3 +15,9 @@ Project 3 is located in its own directory, though some code was copied over for 
 [Project 3 Assignment](project3/project_3_outline/Project3_CMSC409F17.pdf)
 
 [Project 3 Report](project3/FINAL_REPORT.pdf)
+
+Project 4 as well (Natural Language Processing) is located in its own directory
+
+[Project 4 Assignment](project4/project_4_outline/Project4_CMSC409F17.pdf)
+
+[Project 4 Report](project4/FINAL_REPORT.pdf)

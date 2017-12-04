@@ -226,13 +226,15 @@ def normalize_feature_vector(feature_vector):
 
 
 def main():
-    feature_vector = create_feature_vector(minimum_occurrences=2)
+    minimum_occurrences = 2
+    encountered_words = get_encountered_words(minimum_occurrences=minimum_occurrences)
+    feature_vector = create_feature_vector(minimum_occurrences=minimum_occurrences)
 
-    table = [get_encountered_words(minimum_occurrences=2)] + feature_vector
+    table = [get_encountered_words(minimum_occurrences=minimum_occurrences)] + feature_vector
 
     normalized_feature_vector = normalize_feature_vector(feature_vector)
 
-    result = learn_wta(normalized_feature_vector, cluster_count=80)
+    result = learn_wta(normalized_feature_vector, cluster_count=20)
 
     clustered_sentences = split_sentences_into_clusters(result, normalized_feature_vector)
 
@@ -284,7 +286,14 @@ def main():
         md.table(split_table_rows(["Root Word", "\# of instances"], list(count_encountered_words().items()), 49),
                  width=50),
         md.page_break(),
-        md.p("The following 2 tables show the distribution of root words which appear at least 2 times across each "
+        md.p("The following lists the root words with greater than " + str(minimum_occurrences) + "occurrences:"),
+        md.table(split_table_rows(["Root Word", "\# of instances"], list(
+            ({k: v for k, v in count_encountered_words().items() if v > minimum_occurrences}).items()), 49),
+                 width=50),
+        md.page_break(),
+        md.p("The following 2 tables show the distribution of root words which appear at least "
+             + str(minimum_occurrences) +
+             " times across each "
              "document (with each row indicating one sentence) (This is the Term Document Matrix **TDM**)"),
         md.table(split_table(table, 0, math.floor(len(table[0]) / 2)), width=20),
         md.page_break(),
@@ -336,17 +345,40 @@ def main():
              "'Three parking spaces in back, pets are possible with approval from the owner.' does not mention "
              "being about a 'home' or many other words which are used in other documents that truly identify it"
              "as being about a home. With more documents, we would begin to have more overlap, which could "
-             "aid in finding which words provide us the most importance."),
+             "aid in finding which words provide us the most importance. Sentence 10 as well does not share enough"
+             "words to be able to identify it with the provided documents."),
+        md.p("Below, we can see which words these sentences share in common."),
+    ])
+
+    def sentence_tuple_to_formatted_sentence(tuple):
+        formatted_sentence = []
+
+        sentence_vector = feature_vector[tuple[0]]
+
+        for i, v in enumerate(sentence_vector):
+            if v:
+                formatted_sentence.append(encountered_words[i])
+        return str(tuple[0]) + ") " + ", ".join(formatted_sentence)
+
+    for i in range(len(clustered_sentence_strings)):
+        md.save_markdown_report(file, [
+            md.p("Cluster " + str(i + 1) + ":"),
+            md.li(list(map(sentence_tuple_to_formatted_sentence, clustered_sentences[i]))),
+        ])
+
+    md.save_markdown_report(file, [
         md.p("One problem of this method compared to a method where clusters a created as needed, was that if the "
              "random initialization of weights for the cluster were randomly generated in a bad spot, it is likely "
              "the cluster would never contain any sentences because (as the name implies) the Winner Takes All method"
              "would often find one cluster taking over most of the documents, while other clusters remained empty."),
         md.p("The solution taken here for this problem was to learn on many randomly placed clusters. Learning "
-             "began with 80 clusters. From these 80 clusters however, we only end up with "
+             "began with 20 clusters. From these 20 clusters however, we only end up with "
              + str(len(clustered_sentences)) +
              " clusters. Additionally, (during testing) it would some times "
              "result in clusters with only a single result, when the result would have worked better "
              "in some other already defined cluster."),
+        md.p("With fewer clusters (for example 4), we occasionally ended up with good results, but often would end up"
+             "with most documents stuck in one single cluster"),
         md.p("In addition to having more documents to sample, having clusters only as needed would likely improve this "
              "situation. With clusters-as-needed, clusters would only be able to contain documents within some radius "
              "of the cluster's center. If a document is found outside of this radius, then a new cluster would be "
